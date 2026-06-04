@@ -19,7 +19,7 @@ int main() {
     
     int result = fibonacci(n);
     
-    cout << "The " << n << "th Fibonacci number is: " << result << endl;
+    cout << n << "th Fibonacci number is: " << result << endl;
     
     return 0;
 }
