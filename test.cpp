@@ -13,11 +13,11 @@ int fibonacci(int n) {
 }
 
 int main() {
-    int x = 35; // A number high enough to make the inefficiency obvious
+    int n = 35; // A number high enough to make the inefficiency obvious
     
     cout << "Calculating Fibonacci number for " << n << "..." << endl;
     
-    int result = fibonacci(x);
+    int result = fibonacci(n);
     
     cout << n << "th Fibonacci number is: " << result << endl;
     
