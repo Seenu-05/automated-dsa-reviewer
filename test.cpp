@@ -17,9 +17,8 @@ int main() {
     
     cout << "Calculating Fibonacci number for " << n << "..." << endl;
     
-    int result = fibonacci(x);
     
-    cout << n << "th Fibonacci number is: " << result << endl;
+    cout << n << "th Fibonacci number is: " << fibonacci(x) << endl;
     
     return 0;
 }
