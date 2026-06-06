@@ -2,7 +2,7 @@ from flask import Flask, request
 import requests
 from google import genai
 from google.genai import types
-import sqlite3
+import psycopg2
 import os
 from dotenv import load_dotenv
 
@@ -14,13 +14,16 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GITHUB_TOKEN or not GEMINI_API_KEY:
     raise ValueError("Missing API Keys! Check your .env file.")
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError("Missing DATABASE_URL! Check your .env file.")
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
 def get_historical_context():
     conn = None
     try:
-        conn = sqlite3.connect('reviews.db')
+        conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
 
         cursor.execute("SELECT timestamp, ai_feedback FROM code_review ORDER BY id DESC LIMIT 3")
@@ -31,7 +34,7 @@ def get_historical_context():
         for index, row in enumerate(rows, 1):
             context += f"\n--- Past Review #{index} ({row[0]}) ---\n{row[1]}\n"
         return context
-    except sqlite3.Error as e:
+    except psycopg2.Error as e:
         print(f"⚠️ Error fetching history: {e}")
         return "Could not retrieve history due to a database error."
     finally:
@@ -124,17 +127,17 @@ def github_webhook():
                         print("======================\n")
 
                         try:
-                            conn = sqlite3.connect('reviews.db')
+                            conn = psycopg2.connect(DATABASE_URL)
                             cursor = conn.cursor()
                             insert_query = """
                             INSERT INTO code_review(commit_id, ai_feedback)
-                            VALUES (?, ?)
+                            VALUES (%s, %s)
                             """
                             cursor.execute(insert_query, (commit_id, ai_response.text))
                             conn.commit()
                             print(f"💾 Successfully saved review for commit {commit_id[:7]} to database!\n")
 
-                        except sqlite3.Error as e:
+                        except psycopg2.Error as e:
                             print(f"❌ Database error: {e}")
                         
                         finally:
