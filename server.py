@@ -53,8 +53,6 @@ def post_comment_to_github(repo_name, commit_id, comment_body):
         "body": comment_body
     }
 
-    print(f"DEBUG: Token starts with: {GITHUB_TOKEN[:8]}")
-    print(f"DEBUG: Token total length: {len(GITHUB_TOKEN)}")
 
     response = requests.post(api_url, headers=headers, json=payload)
 
