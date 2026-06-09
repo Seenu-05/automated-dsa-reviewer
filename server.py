@@ -115,13 +115,18 @@ def github_webhook():
                         OPTIMIZATION TARGET: [1 single, actionable tip for the next commit]
                         """
 
-                        ai_response = client.models.generate_content(
-                            model='gemini-2.5-flash',
-                            contents=patch,
-                            config=types.GenerateContentConfig(
-                                system_instruction=system_instruction
+                        try:
+                            ai_response = client.models.generate_content(
+                                model='gemini-2.5-flash',
+                                contents=patch,
+                                config=types.GenerateContentConfig(
+                                    system_instruction=system_instruction
+                                )
                             )
-                        )
+                            review_text = ai_response.text
+                        except Exception as e:
+                            print(f"⚠️ AI API Overloaded: {e}")
+                            review_text = "SUMMARY: The AI Coach is currently at maximum capacity (API Overloaded). \nTHE COACH'S VERDICT: Give me a minute to catch my breath! Push another commit shortly to get your full review."
 
                         print("===AI CODE REVIEW===")
                         print(ai_response.text)
